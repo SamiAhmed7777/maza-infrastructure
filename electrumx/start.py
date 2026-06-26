@@ -2,20 +2,17 @@
 """
 ElectrumX startup wrapper for MAZA Network.
 
-Defines the custom MAZA coin class inline and verifies it's registered
-with ElectrumX's Coin hierarchy before starting the server.
+Defines MAZA coin class and force-registers it by monkey-patching
+Coin.lookup_coin_class, bypassing the unreliable __subclasses__()
+discovery mechanism.
 """
 
 import sys
 import asyncio
 import logging
 
-from electrumx.lib.coins import Coin
-from electrumx.lib.hash import double_sha256, Base58, HASHX_LEN
-from electrumx.lib.script import ScriptPubKey
-from hashlib import sha256
+from electrumx.lib.coins import Coin, CoinError
 from electrumx.lib import util
-
 
 # ── Custom MAZA coin class ──
 class Mazacoin(Coin):
@@ -51,25 +48,28 @@ class MazacoinTestnet(Mazacoin):
     RPC_PORT = 11832
 
 
-# ── Verify registration ──
+# ── Force-register: monkey-patch lookup_coin_class ──
+_original_lookup = Coin.lookup_coin_class.__func__  # unbound classmethod
+
+def patched_lookup(cls, name, net):
+    """Check our custom coins first, then fall back to original discovery."""
+    if name.lower() == "mazacoin" and net.lower() == "mainnet":
+        return Mazacoin
+    if name.lower() == "mazacoin" and net.lower() == "testnet":
+        return MazacoinTestnet
+    return _original_lookup(cls, name, net)
+
+Coin.lookup_coin_class = classmethod(patched_lookup)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('maza-startup')
 
-# Debug: list all discovered coin classes
-all_subs = util.subclasses(Coin)
-logger.info(f"Registered coin classes: {[(c.NAME, c.NET) for c in all_subs]}")
-
-try:
-    test_cls = Coin.lookup_coin_class("Mazacoin", "mainnet")
-    logger.info(f"✅ MAZA coin class verified: {test_cls.NAME}/{test_cls.NET}")
-except Exception as e:
-    logger.error(f"❌ MAZA coin lookup failed: {e}")
-    # Force-register by patching lookup
-    logger.warning("Force-registering Mazacoin...")
-    import electrumx.lib.coins as coins_mod
-    # Inject into the module namespace so subclasses() finds it
-    coins_mod.Mazacoin = Mazacoin
-    sys.exit(1)
+# Verify
+test_cls = Coin.lookup_coin_class("Mazacoin", "mainnet")
+logger.info(f"✅ MAZA coin registered: {test_cls.NAME}/{test_cls.NET} "
+            f"(genesis={test_cls.GENESIS_HASH[:16]}...)")
+logger.info(f"   Address prefix: {test_cls.P2PKH_VERBYTE.hex()}, "
+            f"RPC port: {test_cls.RPC_PORT}")
 
 
 # ── Start server ──
