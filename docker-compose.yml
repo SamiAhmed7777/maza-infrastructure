@@ -46,6 +46,7 @@ services:
       - CACHE_MB=1200
       - MAX_SESSIONS=1000
       - LOG_LEVEL=info
+      - ALLOW_ROOT=1
     networks:
       - maza-net
 
