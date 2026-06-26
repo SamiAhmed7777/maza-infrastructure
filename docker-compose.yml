@@ -1,0 +1,49 @@
+# ────────────────────────────────────────────────────────────
+# MAZA Network Full-Stack Infrastructure
+# mazad + ElectrumX + Komodo DeFi Framework ready
+# ────────────────────────────────────────────────────────────
+
+services:
+  # ── MAZA Full Node ──
+  mazad:
+    build:
+      context: ./mazad
+      dockerfile: Dockerfile
+    container_name: mazad
+    restart: unless-stopped
+    volumes:
+      - maza-data:/data
+      - ./mazad/maza.conf:/data/maza.conf:ro
+    ports:
+      - "12835:12835"   # P2P
+      - "12832:12832"   # RPC
+    networks:
+      - maza-net
+
+  # ── ElectrumX Indexer ──
+  electrumx:
+    build:
+      context: ./electrumx
+      dockerfile: Dockerfile
+    container_name: mazad-electrumx
+    restart: unless-stopped
+    depends_on:
+      - mazad
+    volumes:
+      - electrumx-data:/data
+      - ./electrumx/electrumx.conf:/app/electrumx.conf:ro
+    ports:
+      - "50001:50001"   # Electrum TCP
+      - "50002:50002"   # Electrum SSL
+    environment:
+      - ELECTRUMX_DAEMON_URL=http://mazarpc:CHANGE_ME_to_a_strong_password@mazad:12832/
+    networks:
+      - maza-net
+
+volumes:
+  maza-data:
+  electrumx-data:
+
+networks:
+  maza-net:
+    driver: bridge

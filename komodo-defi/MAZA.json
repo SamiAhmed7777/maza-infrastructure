@@ -1,0 +1,24 @@
+{
+  "coin": "MAZA",
+  "name": "mazacoin",
+  "fname": "MazaCoin",
+  "conf_name": "maza.conf",
+  "conf_path": "~/.maza",
+  "rpc": 12832,
+  "rpc_user": "mazarpc",
+  "rpc_pw": "CHANGE_ME_to_a_strong_password",
+  "pubtype": 50,
+  "p2shtype": 9,
+  "wiftype": 224,
+  "bech32_hrp": "maza",
+  "txfee": 0,
+  "mm2": 1,
+  "required_confirmations": 1,
+  "requires_notarization": false,
+  "protocol": {
+    "type": "UTXO",
+    "protocol_data": {
+      "overflow": false
+    }
+  }
+}

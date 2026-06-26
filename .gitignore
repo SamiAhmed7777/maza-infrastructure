@@ -1,0 +1,19 @@
+# Persistent data
+data/
+*.dat
+*.log
+*.pid
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Docker
+docker-compose.override.yml
