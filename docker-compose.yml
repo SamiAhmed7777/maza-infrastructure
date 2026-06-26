@@ -40,7 +40,7 @@ services:
       - NET=mainnet
       - DAEMON_URL=http://mazarpc:GDlWh3njsVQXtsG2kzDxj01svrwr4C5@mazad:12832/
       - DB_DIRECTORY=/data
-      - SERVICES=tcp://0.0.0.0:50001,ssl://0.0.0.0:50002
+      - SERVICES=tcp://0.0.0.0:50001
       - PEER_DISCOVERY=off
       - PEER_ANNOUNCE=off
       - CACHE_MB=1200
