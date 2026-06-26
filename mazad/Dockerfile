@@ -11,7 +11,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV BUILD_PACKAGES="\
     build-essential libtool autotools-dev automake pkg-config \
     libssl-dev libevent-dev libboost-all-dev libsqlite3-dev \
-    libzmq3-dev bsdmainutils python3 git ca-certificates"
+    libzmq3-dev bsdmainutils python3 git ca-certificates wget"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends $BUILD_PACKAGES && \
