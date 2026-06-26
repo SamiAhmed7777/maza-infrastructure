@@ -17,11 +17,13 @@ RUN pip install --no-cache-dir \
     pylru \
     aiohttp
 
-# Custom MAZA coin definition + startup wrapper
+# Custom MAZA coin definition + startup wrapper + config
 COPY coins_maza.py /app/coins_maza.py
 COPY start.py /app/start.py
+COPY electrumx.conf /app/electrumx.conf
 
 WORKDIR /app
+ENV ELECTRUMX_CONF=/app/electrumx.conf
 
 VOLUME ["/data"]
 EXPOSE 50001 50002
